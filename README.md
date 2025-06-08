@@ -4,12 +4,14 @@ Repository ini berisi rekaman tugas-tugas yang telah saya kerjakan selama mengik
 
 ## Submisson
 
-1  Belajar Dasar Pemrograman Web
+1. Memulai Pemrograman dengan Dart
 2. Belajar Membuat Aplikasi Flutter untuk Pemula
-3. Memulai Pemrograman dengan Dart
-4. Belajar Dasar Pemrograman JavaScript
-5. Belajar Back-End Pemula dengan JavaScript
-6. Belajar Membuat Front-End Web untuk Pemula
+3. Belajar Fundamental Aplikasi Flutter
+4. Belajar Penerapan Machine Learning untuk Flutter
+5. Belajar Dasar Pemrograman Web
+6. Belajar Dasar Pemrograman JavaScript
+7. Belajar Back-End Pemula dengan JavaScript
+8. Belajar Membuat Front-End Web untuk Pemula
 
 ## License
 
