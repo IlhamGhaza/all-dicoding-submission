@@ -3,9 +3,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
+import 'package:flutter_map/flutter_map.dart' as fmap;
+import 'package:latlong2/latlong.dart' as latlng;
 import 'dart:async';
 
 import '../../../../data/models/story_model.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class StoryDetailPage extends StatelessWidget {
@@ -148,6 +151,7 @@ class StoryDetailPage extends StatelessWidget {
                           height: 1.6,
                         ),
                   ),
+                  //maps
                   if (storyLocation != null) ...[
                     const SizedBox(height: 24),
                     Container(
@@ -202,13 +206,51 @@ class StoryDetailPage extends StatelessWidget {
                           const SizedBox(height: 16),
                           SizedBox(
                             height: 200,
-                            child: GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                  target: storyLocation, zoom: 15),
-                              markers: markers,
-                              scrollGesturesEnabled: false,
-                              zoomGesturesEnabled: false,
-                            ),
+                            child: AppConfig.hasGoogleMapsApiKey
+                                ? GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                        target: storyLocation, zoom: 15),
+                                    markers: markers,
+                                    scrollGesturesEnabled: false,
+                                    zoomGesturesEnabled: false,
+                                  )
+                                : IgnorePointer(
+                                    ignoring: true,
+                                    child: fmap.FlutterMap(
+                                      options: fmap.MapOptions(
+                                        initialCenter: latlng.LatLng(
+                                          storyLocation.latitude,
+                                          storyLocation.longitude,
+                                        ),
+                                        initialZoom: 15,
+                                      ),
+                                      children: [
+                                        fmap.TileLayer(
+                                          urlTemplate:
+                                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                          subdomains: const ['a', 'b', 'c'],
+                                          userAgentPackageName: 'flutter_story',
+                                        ),
+                                        fmap.MarkerLayer(
+                                          markers: [
+                                            fmap.Marker(
+                                              width: 36,
+                                              height: 36,
+                                              point: latlng.LatLng(
+                                                storyLocation.latitude,
+                                                storyLocation.longitude,
+                                              ),
+                                              child: const Icon(
+                                                Icons.location_on,
+                                                size: 36,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                           ),
                         ],
                       ),

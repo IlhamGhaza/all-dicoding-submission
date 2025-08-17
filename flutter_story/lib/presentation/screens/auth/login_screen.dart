@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                   Hero(
                     tag: 'app-logo',
                     child: Icon(
-                      Icons.auto_stories,
+                      Icons.camera,
                       size: 80,
                       color: Theme.of(context).colorScheme.primary,
                     ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/models/story_model.dart';
+import '../../core/config/app_config.dart';
 import '../providers/auth_provider.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
@@ -11,6 +12,7 @@ import '../screens/home/presentation/add_story_screen.dart';
 import '../screens/home/presentation/home_screen.dart';
 import '../screens/home/presentation/story_detail_screen.dart';
 import '../screens/maps/select_location_screen.dart';
+import '../screens/maps/select_location_screen_osm.dart';
 
 class AppRouter {
   static const String splashPath = '/splash';
@@ -119,7 +121,9 @@ class AppRouter {
           path: selectLocationPath,
           pageBuilder: (context, state) => CustomTransitionPage<void>(
             key: state.pageKey,
-            child: const SelectLocationScreen(),
+            child: AppConfig.hasGoogleMapsApiKey
+                ? const SelectLocationScreen()
+                : const SelectLocationScreenOSM(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return SlideTransition(
