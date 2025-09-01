@@ -1,0 +1,822 @@
+{
+	"info": {
+		"_postman_id": "211bac4e-9e40-4a2d-95b0-edab8a9a3d7e",
+		"name": "[743] OpenShop API Test With Soft Delete",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7447411"
+	},
+	"item": [
+		{
+			"name": "[Mandatory] Adding Products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 201 value', () => {\r",
+							"   pm.response.to.have.status(201);\r",
+							"}); \r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"}); \r",
+							"\r",
+							"pm.test('response body should an object', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should have correct property and value', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    const { id } = responseJson;\r",
+							"\r",
+							"    pm.expect(id).to.not.equals('');\r",
+							"    pm.expect(responseJson).to.haveOwnProperty('id');\r",
+							"    \r",
+							"    pm.environment.set('productId', id);\r",
+							"    const expectedId = pm.environment.get('productId');\r",
+							"    pm.expect(responseJson.id).to.equal(expectedId);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"sku\": \"{{sku}}\",\r\n  \"description\": \"{{description}}\",\r\n  \"shop\": \"{{shop}}\",\r\n  \"location\": \"{{location}}\",\r\n  \"price\": {{price}},\r\n  \"discount\": {{discount}},\r\n  \"category\": \"{{category}}\",\r\n  \"stock\": {{stock}},\r\n  \"is_available\": {{isAvailable}},\r\n  \"is_delete\": {{isDelete}},\r\n  \"picture\": \"{{picture}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/products/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Mandatory] Getting All Products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 200 value', () => {\r",
+							"   pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should an object', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"}); \r",
+							"\r",
+							"pm.test('response body should have the correct property and value', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseJson).to.haveOwnProperty('products');\r",
+							"    pm.expect(responseJson.products).to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body data should have a products array and contain at least 1 item', () => {\r",
+							"   const responseJson = pm.response.json();\r",
+							"   const { products } = responseJson;\r",
+							" \r",
+							"   pm.expect(products).to.be.an('array');\r",
+							"   pm.expect(products).lengthOf.at.least(1);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Getting Specified Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 200 value', () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"}); \r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"   pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should be an object', () => {\r",
+							"   const responseJson = pm.response.json();\r",
+							"   pm.expect(responseJson).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should have the correct property and value', () => {\r",
+							"   const responseJson = pm.response.json();\r",
+							"\r",
+							"   pm.expect(responseJson).to.be.an('object');\r",
+							"}); \r",
+							"\r",
+							"pm.test('response body should contain product object', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseJson).to.have.ownProperty('id');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('name');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('shop');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('price');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('sku');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('description');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('location');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('discount');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('category');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('stock');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('is_available');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('picture');\r",
+							"    pm.expect(responseJson).to.have.ownProperty('_links');\r",
+							"    pm.expect(responseJson._links).to.be.an('array');\r",
+							"}); \r",
+							"\r",
+							"pm.test('product object should contain correct value for id, title, body, and tags property', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"\r",
+							"    const expectedId = pm.environment.get('productId');\r",
+							"    const expectedName = pm.environment.get('name');\r",
+							"    const expectedSku = pm.environment.get('sku');\r",
+							"    const expectedDescription = pm.environment.get('description');\r",
+							"    const expectedShop = pm.environment.get('shop');\r",
+							"    const expectedLocation = pm.environment.get('location');\r",
+							"    const expectedPrice = Number(pm.environment.get('price'));\r",
+							"    const expectedDiscount = Number(pm.environment.get('discount'));\r",
+							"    const expectedCategory = pm.environment.get('category');\r",
+							"    const expectedStock = Number(pm.environment.get('stock'));\r",
+							"    const expectedIsAvailable = Boolean(pm.environment.get('isAvailable'));\r",
+							"\r",
+							"    pm.expect(responseJson).to.have.ownProperty('id');\r",
+							"    pm.expect(responseJson.id).to.equals(expectedId);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('name');\r",
+							"    pm.expect(responseJson.name).to.equals(expectedName);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('sku');\r",
+							"    pm.expect(responseJson.sku).to.equals(expectedSku);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('description');\r",
+							"    pm.expect(responseJson.description).to.equals(expectedDescription);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('shop');\r",
+							"    pm.expect(responseJson.shop).to.equals(expectedShop);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('location');\r",
+							"    pm.expect(responseJson.location).to.equals(expectedLocation);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('price');\r",
+							"    pm.expect(responseJson.price).to.equals(expectedPrice);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('discount');\r",
+							"    pm.expect(responseJson.discount).to.equals(expectedDiscount);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('category');\r",
+							"    pm.expect(responseJson.category).to.equals(expectedCategory);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('stock');\r",
+							"    pm.expect(responseJson.stock).to.equals(expectedStock);\r",
+							"    pm.expect(responseJson).to.have.ownProperty('is_available');\r",
+							"    pm.expect(responseJson.is_available).to.equals(expectedIsAvailable);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products/{{productId}}/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						"{{productId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Mandatory] Update Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 200 value', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"   pm.expect(pm.response.headers.get('Content-Type')).to.equals(\"application/json\");\r",
+							"})\r",
+							"\r",
+							"pm.test('response body should be an object', () => {\r",
+							"   const responseJson = pm.response.json();\r",
+							"   pm.expect(responseJson).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should have correct property and value', () => {\r",
+							"   const responseJson = pm.response.json();\r",
+							"   pm.expect(responseJson).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('when request the updated product', () => {\r",
+							"    const productId = pm.environment.get('productId');\r",
+							"    pm.sendRequest(`http://localhost:8000/products/${productId}/`, (error, response) => {\r",
+							"        if(!error) {\r",
+							"            pm.test('then the updated product should contain the latest data', () => {\r",
+							"                const responseJson = response.json();\r",
+							"                const expectedId = pm.environment.get('productId');\r",
+							"                const expectedName = pm.environment.get('updateName');\r",
+							"                const expectedDescription = pm.environment.get('updateDescription');\r",
+							"                const expectedPrice = Number(pm.environment.get('updatePrice'));\r",
+							"\r",
+							"                pm.expect(responseJson).to.have.ownProperty('id');\r",
+							"                pm.expect(responseJson.id).to.equals(expectedId);\r",
+							"                pm.expect(responseJson).to.have.ownProperty('name');\r",
+							"                pm.expect(responseJson.name).to.equals(expectedName);\r",
+							"                pm.expect(responseJson).to.have.ownProperty('description');\r",
+							"                pm.expect(responseJson.description).to.equals(expectedDescription);\r",
+							"                pm.expect(responseJson).to.have.ownProperty('price');\r",
+							"                pm.expect(responseJson.price).to.equals(expectedPrice);\r",
+							"            });\r",
+							"        }\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{updateName}}\",\r\n  \"sku\": \"{{updateSku}}\",\r\n  \"description\": \"{{updateDescription}}\",\r\n  \"shop\": \"{{updateShop}}\",\r\n  \"location\": \"{{updateLocation}}\",\r\n  \"price\": {{updatePrice}},\r\n  \"discount\": {{updateDiscount}},\r\n  \"category\": \"{{updateCategory}}\",\r\n  \"stock\": {{updateStock}},\r\n  \"is_available\": {{updateIsAvailable}},\r\n  \"is_delete\": {{isDelete}},\r\n  \"picture\": \"{{updatePicture}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/products/{{productId}}/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						"{{productId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Mandatory] Getting Product By Name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('status code should be 200', () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response header Content-Type should be application/json', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');",
+							"});",
+							"",
+							"pm.test('response body should be an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body object should have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson).to.haveOwnProperty('products');",
+							"    pm.expect(responseJson.products).to.be.an('array');",
+							"",
+							"    const products = responseJson.products;",
+							"    const expectedName = pm.request.url.query.get(\"name\").toLowerCase();",
+							"",
+							"    products.forEach((product) => {",
+							"        pm.expect(product.id).to.be.ok;",
+							"        pm.expect(product.name.toLowerCase()).to.includes(expectedName);",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products?name=Python",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Python"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Adding Product with Invalid Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 400 value', () => {\r",
+							"   pm.response.to.have.status(400);\r",
+							"}); \r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"}); \r",
+							"\r",
+							"pm.test('response body should an object', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"sku\": \"{{sku}}\",\r\n  \"description\": \"{{description}}\",\r\n  \"shop\": \"{{shop}}\",\r\n  \"location\": \"{{location}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/products/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Getting Specified Product with Not Found Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 404 value', () => {\r",
+							"  pm.response.to.have.status(404);\r",
+							"}); \r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"   pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should be an object', () => {\r",
+							"   const responseJson = pm.response.json();\r",
+							"   pm.expect(responseJson).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should have the correct property and value', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseJson).to.haveOwnProperty('detail');\r",
+							"\r",
+							"    pm.expect(responseJson.detail).to.equals('Not found.');\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products/e7640250-b51e-45f0-bd2f-f91c2c6db46a/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						"e7640250-b51e-45f0-bd2f-f91c2c6db46a",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Getting Product By Name (case-insensitive)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('status code should be 200', () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response header Content-Type should be application/json', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');",
+							"});",
+							"",
+							"pm.test('response body should be an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body object should have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson).to.haveOwnProperty('products');",
+							"    pm.expect(responseJson.products).to.be.an('array');",
+							"",
+							"    const products = responseJson.products;",
+							"    const expectedName = pm.request.url.query.get(\"name\");",
+							"",
+							"    products.forEach((product) => {",
+							"        pm.expect(product.id).to.be.ok;",
+							"        pm.expect(product.name.toLowerCase()).to.includes(expectedName.toLowerCase());",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products?name=baju",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "baju"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Getting Product By Location",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('status code should be 200', () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response header Content-Type should be application/json', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');",
+							"});",
+							"",
+							"pm.test('response body should be an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body object should have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson).to.haveOwnProperty('products');",
+							"    pm.expect(responseJson.products).to.be.an('array');",
+							"",
+							"    const products = responseJson.products;",
+							"    const expectedLocation = pm.request.url.query.get(\"location\").toLowerCase();",
+							"",
+							"    products.forEach((product) => {",
+							"        pm.expect(product.id).to.be.ok;",
+							"        pm.expect(product.location.toLowerCase()).to.includes(expectedLocation);",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products?location=Indonesia",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "location",
+							"value": "Indonesia"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Getting Product By Location (case-insensitive)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('status code should be 200', () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response header Content-Type should be application/json', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');",
+							"});",
+							"",
+							"pm.test('response body should be an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body object should have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson).to.haveOwnProperty('products');",
+							"    pm.expect(responseJson.products).to.be.an('array');",
+							"",
+							"    const products = responseJson.products;",
+							"    const expectedLocation = pm.request.url.query.get(\"location\");",
+							"",
+							"    products.forEach((product) => {",
+							"        pm.expect(product.id).to.be.ok;",
+							"        pm.expect(product.location.toLowerCase()).to.includes(expectedLocation.toLowerCase());",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products?location=jakarta",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "location",
+							"value": "jakarta"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Update Product with Invalid Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 400 value', () => {\r",
+							"   pm.response.to.have.status(400);\r",
+							"}); \r",
+							"\r",
+							"pm.test('response Content-Type header should have application/json value', () => {\r",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"}); \r",
+							"\r",
+							"pm.test('response body should an object', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{updateName}}\",\r\n  \"sku\": \"{{updateSku}}\",\r\n  \"description\": \"{{updateDescription}}\",\r\n  \"shop\": \"{{updateShop}}\",\r\n  \"location\": \"{{updateLocation}}\",\r\n  \"price\": {{updatePrice}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/products/{{productId}}/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						"{{productId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Soft Delete Product with Valid Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('response status code should have 204 value', () => {\r",
+							"   pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test('the product should be marked as deleted', () => {\r",
+							"    const productId = pm.environment.get('productId');\r",
+							"    pm.sendRequest(`http://localhost:8000/products/${productId}/`, (error, response) => {\r",
+							"        if(!error) {\r",
+							"            const responseData = response.json();\r",
+							"            pm.test('the product should still exist', () => {\r",
+							"                pm.expect(response.code).to.equal(200);\r",
+							"            });\r",
+							"            pm.test('the product should be marked as deleted', () => {\r",
+							"                pm.expect(responseData.is_delete).to.be.true;\r",
+							"            });\r",
+							"        }\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products/{{productId}}/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						"{{productId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Optional] Delete Product with Not Found Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('status code should be 404', () => {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test('response header Content-Type should be application/json', () => {\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should be an object', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('response body should have correct property and value', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseJson).to.haveOwnProperty('detail');\r",
+							"\r",
+							"    pm.expect(responseJson.detail).to.equals('Not found.');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/products/e7640250-b51e-45f0-bd2f-f91c2c6db46d/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"products",
+						"e7640250-b51e-45f0-bd2f-f91c2c6db46d",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
